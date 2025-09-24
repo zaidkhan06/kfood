@@ -1,12 +1,16 @@
-import './App.css'
+import { Route, Routes } from "react-router-dom"
+import SignUp from "./pages/SignUp"
+import SignIn from "./pages/SignIn"
+
 
 function App() {
   
 
   return (
-    <div className='h-screen bg-gray-100'>
-      <h1 className='text-6xl font-semibold text-orange-400  flex justify-center '>KFood</h1>
-    </div>
+    <Routes>
+       <Route path="/signup" element={<SignUp />} />
+       <Route path="/signin" element={<SignIn />} />
+    </Routes>
   )
 }
 
