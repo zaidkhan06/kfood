@@ -65,8 +65,8 @@ const Navbar = () => {
           <a href="/restaurants" className="block text-gray-700 px-3 py-2 rounded hover:bg-red-50">Restaurants</a>
           <a href="/about" className="block text-gray-700 px-3 py-2 rounded hover:bg-red-50">About</a>
           <a href="/contact" className="block text-gray-700 px-3 py-2 rounded hover:bg-red-50">Contact</a>
-          <button className="w-full bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">Login</button>
-          <button className="w-full bg-white border border-red-500 text-red-500 px-3 py-2 rounded hover:bg-red-50">Sign Up</button>
+          <button onClick={() => navigate("/signin")} className="w-full bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">Login</button>
+          <button onClick={() => navigate("/signin")} className="w-full bg-white border border-red-500 text-red-500 px-3 py-2 rounded hover:bg-red-50">Sign Up</button>
         </div>
       )}
     </nav>
