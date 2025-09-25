@@ -8,11 +8,14 @@ function App() {
   
 
   return (
+    <>
+    <Navbar />
     <Routes>
        <Route path="/signup" element={<SignUp />} />
        <Route path="/signin" element={<SignIn />} />
        <Route path="/forgot-password" element={<ForgotPassword />} />
     </Routes>
+    </>
   )
 }
 
