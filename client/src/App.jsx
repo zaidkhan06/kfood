@@ -9,7 +9,11 @@ import { useSelector } from "react-redux"
 import useGetCity from './hooks/useGetCity'
 
 
-export const serverUrl = "http://localhost:8000"
+export const serverUrl =
+  import.meta.env.VITE_MODE === "development"
+    ? "http://localhost:8000"
+    : "https://kfood.onrender.com";
+
 function App() {
   useGetCurrentUser()
   useGetCity()
