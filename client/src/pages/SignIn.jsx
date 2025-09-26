@@ -6,12 +6,17 @@ import axios from "axios";
 import { serverUrl } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { ClipLoader } from "react-spinners"
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
+  let [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const dispatch = useDispatch(); 
 
 
   const handleGoogleAuth = async () => {
@@ -25,7 +30,7 @@ const SignIn = () => {
 
 
       }, { withCredentials: true })
-      console.log(data);
+      dispatch(setUserData(data))
 
     } catch (error) {
        setError(error?.response?.data?.message)
@@ -46,6 +51,7 @@ const SignIn = () => {
       setError("Password must be at least 6 characters");
       return;
     }
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -56,10 +62,15 @@ const SignIn = () => {
 
 
       alert("Sign in successful!");
+      dispatch(setUserData(res.data))
+      setEmail("");
+      setPassword("");
       setError("")
+      setLoading(false)
 
       // Optionally redirect to login page
     } catch (error) {
+      setLoading(false)
       setError(error?.response?.data?.message)
     }
   };
@@ -115,8 +126,8 @@ const SignIn = () => {
           <Link to="/forgot-password">Forgot Password</Link>
         </div>
 
-        <button onClick={handleSignIn} className='w-full mt-2 flex items-center justify-center gap-2  rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] hover:bg-[#e64323] text-white cursor-pointer'>
-          Sign In
+        <button onClick={handleSignIn} disabled={loading} className='w-full mt-2 flex items-center justify-center gap-2  rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] hover:bg-[#e64323] text-white cursor-pointer'>
+         {loading?<ClipLoader size={24} color='#ffff' />:"Sign In"}
         </button>
         <p className='flex text-red-500 text-center'>{error}</p>
         <button onClick={handleGoogleAuth} className='cursor-pointer w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100'>

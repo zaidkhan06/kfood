@@ -6,9 +6,15 @@ import axios from "axios";
 import { serverUrl } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { ClipLoader } from "react-spinners"
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
+
 
 const SignUp = () => {
+    const dispatch = useDispatch()
     const [showPassword, setShowPassword] = useState(false);
+     let [loading, setLoading] = useState(false);
     const [role, setRole] = useState("User")
 
     const[fullName, setFullName] = useState("");
@@ -23,6 +29,7 @@ const SignUp = () => {
         if(!mobile){
             return setError("Phone number is required")
         }
+        
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
 
@@ -35,7 +42,8 @@ const SignUp = () => {
 
 
             }, {withCredentials:true})
-            console.log(data);
+            dispatch(setUserData(data))
+           
             
         } catch (error) {
              setError(error?.response?.data?.message)
@@ -60,6 +68,7 @@ const SignUp = () => {
     setError("Enter a valid 10-digit Indian mobile number");
     return;
   }
+  setLoading(true)
 
   try {
     const res = await axios.post(
@@ -69,9 +78,15 @@ const SignUp = () => {
     );
 
     alert("Sign up successful!");
+    dispatch(setUserData(res.data))
+    setFullName("")
+    setEmail("")
+    setMobile("");
     setError("")
+    setLoading(false)
     // Optionally redirect to login page
   } catch (error) {
+    setLoading(false)
      setError(error?.response?.data?.message)
   }
 };
@@ -167,8 +182,8 @@ const SignUp = () => {
                         ))}
                     </div>
                 </div>
-                <button onClick={handleSignUp} className='w-full mt-4 flex items-center justify-center gap-2  rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] hover:bg-[#e64323] text-white cursor-pointer'>
-                    Sign Up
+                <button onClick={handleSignUp} disabled={loading} className='w-full mt-4 flex items-center justify-center gap-2  rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] hover:bg-[#e64323] text-white cursor-pointer'>
+                    {loading?<ClipLoader size={24} color='#ffff' />:"Sign Up"}
                 </button>
                 <p className='text-red-500 text-center'>{error}</p>
                 <button onClick={handleGoogleAuth} className='cursor-pointer w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100'>
