@@ -7,6 +7,7 @@ import Home from "./components/Home"
 import useGetCurrentUser from "./hooks/useGetCurrentUser"
 import { useSelector } from "react-redux"
 import useGetCity from './hooks/useGetCity'
+import { onAuthStateChanged } from "firebase/auth"
 
 
 export const serverUrl =
@@ -15,6 +16,7 @@ export const serverUrl =
     : "https://kfood.onrender.com";
 
 function App() {
+  onAuthStateChanged()
   useGetCurrentUser()
   useGetCity()
   const {userData} = useSelector(state=>state.user)
