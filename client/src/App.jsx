@@ -6,7 +6,8 @@ import Navbar from "./components/Navbar"
 import Home from "./components/Home"
 import useGetCurrentUser from "./hooks/useGetCurrentUser"
 import { useSelector } from "react-redux"
-import useGetCity from "./hooks/UseGetCity"
+import useGetCity from './hooks/useGetCity'
+
 
 export const serverUrl = "http://localhost:8000"
 function App() {
