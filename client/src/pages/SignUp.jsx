@@ -22,6 +22,7 @@ const SignUp = () => {
     const[password, setPassword] = useState("");
     const[mobile, setMobile] = useState("");
     const [error, setError] = useState("")
+    
 
 
 

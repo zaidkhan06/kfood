@@ -16,4 +16,7 @@
 .bordercolor {
   border-color: #ddd;
 }
+body {
+  overflow-x: hidden;
+}
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setCity } from "../redux/userSlice";
+import { setCurrentAddress, setCurrentCity, setCurrentState } from "../redux/userSlice";
 
 const useGetCity = () => {
   const dispatch = useDispatch();
@@ -31,7 +31,11 @@ const useGetCity = () => {
 
        
 
-        dispatch(setCity(city));
+        dispatch(setCurrentCity(city));
+        dispatch(setCurrentState(result?.data?.results[0].state))
+        dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1))
+        
+        
       } catch (error) {
         console.error("Error fetching city:", error);
       }
