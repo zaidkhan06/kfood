@@ -16,6 +16,7 @@ const Navbar = () => {
   const [showInfo, setShowInfo] = useState(false); // profile dropdown toggle
   const [showSearch, setShowSearch] = useState(false); // mobile search toggle
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Handle Logout (API call + clear Redux state)
   const handleLogout = async () => {
@@ -100,13 +101,13 @@ const Navbar = () => {
             {myShopData && (
               <>
                 {/* Add Food Items Button (Desktop) */}
-                <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
+                <button onClick={() => navigate("/add-item")} className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
                   <FaPlus size={18} />
                   <span>Add Food Items</span>
                 </button>
 
                 {/* Add Food Items Mobile */}
-                <button className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
+                <button onClick={() => navigate("/add-item")}  className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
                   <FaPlus size={18} />
                 </button>
               </>

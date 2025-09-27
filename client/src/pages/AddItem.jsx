@@ -44,7 +44,13 @@ const AddItem = () => {
                 },
                 withCredentials: true
             });
-            console.log("Response:", res.data);
+            dispatch(setmyShopData(res.data));
+            alert("Added Food SuccessFully")
+            setName("")
+            setCategory("")
+            setFoodType("")
+            setPrice("")
+            navigate("/");
         } catch (error) {
             console.error("Upload error:", error.response?.data || error.message);
         }
@@ -56,7 +62,7 @@ const AddItem = () => {
 
     return (
         <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
-            <div className='absolute top-[20px] left-[20px] z-[10] mb-[10px]'>
+            <div className='absolute top-[35px] left-[35px] z-[10] mb-[10px]'>
                 <IoArrowBack onClick={() => navigate("/")} size={35} className='text-[#ff4d2d]' />
             </div>
 

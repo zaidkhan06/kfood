@@ -44,7 +44,12 @@ const CreateEditShop = () => {
                 },
                 withCredentials: true
             });
-            console.log("Response:", res.data);
+            alert("Created Shop Successfully")
+            setName("")
+            setAddress("")
+            setCity("")
+            setState("")
+            navigate("/");
         } catch (error) {
             console.error("Upload error:", error.response?.data || error.message);
         }
