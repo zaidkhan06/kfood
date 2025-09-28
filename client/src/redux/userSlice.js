@@ -4,7 +4,7 @@ const userSlice = createSlice({
     name: "user",
     initialState:{
         userData:null,
-        city: null,
+        city:null,
         currentState:null,
         currentAddress:null
     },

@@ -54,6 +54,7 @@ const AddItem = () => {
             setPrice("")
             navigate("/");
             setLoading(false);
+            
         } catch (error) {
             console.error("Upload error:", error.response?.data || error.message);
             setLoading(false);

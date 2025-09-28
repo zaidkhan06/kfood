@@ -1,9 +1,10 @@
 import React from 'react'
+import Navbar from './Navbar'
 
 const UserDashBoard = () => {
   return (
-    <div className=''>
-
+    <div className='w-full min-h-screen' >
+      <Navbar />
     </div>
   )
 }

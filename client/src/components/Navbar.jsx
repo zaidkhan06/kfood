@@ -17,6 +17,8 @@ const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false); // mobile search toggle
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+ 
 
   // Handle Logout (API call + clear Redux state)
   const handleLogout = async () => {
@@ -77,7 +79,7 @@ const Navbar = () => {
       {/* Right-side Icons & Actions */}
       <div className="flex items-center gap-4">
         {/* Mobile Search Icon Toggle (User only) */}
-        {userData.role == "User" && (
+        {userData.role=="User" && (
           showSearch ? (
             <RxCross2
               size={25}
