@@ -1,24 +1,27 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoArrowBack } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaUtensils } from "react-icons/fa";
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { setmyShopData } from '../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
 
-const AddItem = () => {
+const EditItem = () => {
     const navigate = useNavigate()
     const { myShopData } = useSelector(state => state.owner)
+     const [currentItem, setCurrentItem] = useState("")
+    const {itemId} = useParams()
     const [category, setCategory] = useState("")
-    const [foodType, setFoodType] = useState("Veg");
+    const [foodType, setFoodType] = useState("");
     const categories = ["Snacks", "Main Course", "Desserts", "Pizza", "Burgers", "Sandwiches", "South Indian", "North Indian", "Chinese", "Fast Food", "Others"]
     const [name, setName] = useState("");
     const [frontendImage, setFrontendImage] = useState("");
     const [backendImage, setBackendImage] = useState("");
     const [price, setPrice] = useState(0);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+   
     const dispatch = useDispatch()
 
     const handleImage = (e) => {
@@ -28,8 +31,8 @@ const AddItem = () => {
     }
 
     const handleSubmit = async (e) => {
+      setLoading(true)
         e.preventDefault();
-        setLoading(true);
 
         const formData = new FormData();
         formData.append("name", name);
@@ -41,7 +44,7 @@ const AddItem = () => {
         }
 
         try {
-            const res = await axios.post(`${serverUrl}/api/item/add-item`, formData, {
+            const res = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -53,12 +56,36 @@ const AddItem = () => {
             setFoodType("")
             setPrice("")
             navigate("/");
-            setLoading(false);
+            setLoading(false)
         } catch (error) {
             console.error("Upload error:", error.response?.data || error.message);
-            setLoading(false);
+            setLoading(false)
         }
     };
+
+
+    useEffect(()=>{
+      const handleGetItemById = async () => {
+        try {
+          const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`, {withCredentials:true})
+          setCurrentItem(result.data)
+        } catch (error) {
+          console.log(error)
+        }
+
+      }
+      handleGetItemById()
+
+    }, [itemId])
+
+    useEffect(()=>{
+      setName(currentItem?.name || "")
+      setPrice(currentItem?.price || 0)
+      setCategory(currentItem?.category || "")
+      setFoodType(currentItem?.foodType || "")
+      setFrontendImage(currentItem?.image || "")
+
+    }, [currentItem])
 
 
 
@@ -76,7 +103,7 @@ const AddItem = () => {
                         <FaUtensils className='text-[#ff4d2d] w-16 h-16' />
                     </div>
                     <div className='text-3xl font-extrabold text-gray-900'>
-                        Add Food
+                        Edit Food
                     </div>
 
 
@@ -145,8 +172,8 @@ const AddItem = () => {
                             <option value="Non Veg" >Non Veg</option>
                         </select>
                     </div>
-                    <button disabled={loading} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all cursor-pointer'>
-                        {loading? <ClipLoader size={18} color='white'/> : "Save"}
+                    <button disabled={loading} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all cursor-pointer '>
+                      {loading? <ClipLoader size={25} color='white'/>: "Save"}
                     </button>
                 </form>
             </div>
@@ -155,4 +182,4 @@ const AddItem = () => {
     )
 }
 
-export default AddItem
+export default EditItem

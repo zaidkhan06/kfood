@@ -6,6 +6,7 @@ import { FaUtensils } from "react-icons/fa";
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { setmyShopData } from '../redux/ownerSlice';
+import { ClipLoader } from 'react-spinners';
 
 const CreateEditShop = () => {
     const navigate = useNavigate()
@@ -17,6 +18,7 @@ const CreateEditShop = () => {
     const [state, setState] = useState(myShopData?.state || currentState);
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || "");
     const [backendImage, setBackendImage] = useState("");
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch()
 
     const handleImage = (e) => {
@@ -27,6 +29,7 @@ const CreateEditShop = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
 
         const formData = new FormData();
         formData.append("name", name);
@@ -44,14 +47,15 @@ const CreateEditShop = () => {
                 },
                 withCredentials: true
             });
-            alert("Created Shop Successfully")
             setName("")
             setAddress("")
             setCity("")
             setState("")
             navigate("/");
+            setLoading(false)
         } catch (error) {
             console.error("Upload error:", error.response?.data || error.message);
+            setLoading(false)
         }
     };
 
@@ -135,8 +139,8 @@ const CreateEditShop = () => {
                             value={address}
                         />
                     </div>
-                    <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all cursor-pointer'>
-                        Save
+                    <button disabled={loading} className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all cursor-pointer'>
+                       {loading? <ClipLoader size={18} color='white'/> : "Save"}
                     </button>
                 </form>
             </div>
