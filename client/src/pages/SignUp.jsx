@@ -78,7 +78,7 @@ const SignUp = () => {
       { withCredentials: true }
     );
 
-    alert("Sign up successful!");
+    
     dispatch(setUserData(res.data))
     setFullName("")
     setEmail("")

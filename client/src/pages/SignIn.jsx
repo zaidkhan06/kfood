@@ -61,7 +61,7 @@ const SignIn = () => {
       );
 
 
-      alert("Sign in successful!");
+     
       dispatch(setUserData(res.data))
       setEmail("");
       setPassword("");
