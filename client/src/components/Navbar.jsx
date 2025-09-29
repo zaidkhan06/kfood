@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoSearchSharp, IoCartOutline, IoNotifications } from "react-icons/io5";
@@ -10,161 +10,136 @@ import { setUserData } from "../redux/userSlice";
 import { FaPlus } from "react-icons/fa";
 
 const Navbar = () => {
-  // Redux state (userData & city from store)
   const { userData, currentCity } = useSelector(state => state.user);
   const { myShopData } = useSelector(state => state.owner);
-  const [showInfo, setShowInfo] = useState(false); // profile dropdown toggle
-  const [showSearch, setShowSearch] = useState(false); // mobile search toggle
+  const [showInfo, setShowInfo] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
- 
 
-  // Handle Logout (API call + clear Redux state)
+  const searchPlaceholders = [
+    "Search delicious food...",
+    "Try spicy pizza...",
+    "Fresh burgers near you...",
+    "Desserts to delight you...",
+  ];
+
   const handleLogout = async () => {
     try {
-      const result = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true });
+      await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true });
       dispatch(setUserData(null));
     } catch (error) {
       console.log(error);
     }
   };
 
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false); // fade out
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % searchPlaceholders.length);
+        setFade(true); // fade in
+      }, 500); // same as transition duration
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentPlaceholder = searchPlaceholders[placeholderIndex];
+
   return (
-    <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#fff9f6] overflow-visible">
+    <nav className="w-full fixed top-0 z-50  backdrop-blur-md  px-4 sm:px-6 lg:px-8 h-[80px] flex items-center justify-between md:justify-center gap-4">
 
       {/* Logo */}
-      <h1 className="text-3xl font-bold mb-2 text-[#ff4d2d]">Kfood</h1>
+      <h1 className="text-3xl font-bold text-[#ff4d2d] cursor-pointer" onClick={() => navigate("/")}>
+        Kfood
+      </h1>
 
-      {/* Mobile Search Bar (only for Users) */}
-      {showSearch && userData.role == "User" && (
-        <div className="w-[90%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] flex fixed top-[80px] left-[5%]">
-          {/* City Location */}
-          <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
-            <FaLocationDot size={25} className="text-[#ff4d2d]" />
-            <div className="w-[80%] truncate text-gray-600">{currentCity}</div>
-          </div>
-          {/* Search Input */}
-          <div className="flex w-[80%] items-center gap-[10px]">
-            <IoSearchSharp size={25} className="text-[#ff4d2d]" />
-            <input
-              type="text"
-              placeholder="Search delicious food..."
-              className="px-[10px] text-gray-700 outline-0 w-full"
-            />
-          </div>
+      {/* Desktop Search */}
+      {userData.role === "User" && (
+        <div className="hidden md:flex items-center w-[50%] lg:w-[40%] h-[50px] bg-white rounded-full shadow-md px-4 gap-2">
+          <FaLocationDot className="text-[#ff4d2d] text-lg" />
+          <span className="truncate text-gray-600">{currentCity}</span>
+          <IoSearchSharp className="text-[#ff4d2d] text-lg" />
+          <input
+            type="text"
+            placeholder={currentPlaceholder}
+            style={{
+              opacity: fade ? 1 : 0,
+              transition: "opacity 0.5s ease-in-out",
+            }}
+            className="flex-1 px-2 outline-none text-gray-700 bg-transparent"
+          />
         </div>
       )}
 
-      {/* Desktop Search Bar (only for Users) */}
-      {userData.role == "User" && (
-        <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] md:flex hidden">
-          {/* City Location */}
-          <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">
-            <FaLocationDot size={25} className="text-[#ff4d2d]" />
-            <div className="w-[80%] truncate text-gray-600">{currentCity}</div>
-          </div>
-          {/* Search Input */}
-          <div className="flex w-[80%] items-center gap-[10px]">
-            <IoSearchSharp size={25} className="text-[#ff4d2d]" />
-            <input
-              type="text"
-              placeholder="Search delicious food..."
-              className="px-[10px] text-gray-700 outline-0 w-full"
-            />
-          </div>
-        </div>
-      )}
+      {/* Right Icons */}
+      <div className="flex items-center gap-3 md:gap-5">
 
-      {/* Right-side Icons & Actions */}
-      <div className="flex items-center gap-4">
-        {/* Mobile Search Icon Toggle (User only) */}
-        {userData.role=="User" && (
-          showSearch ? (
-            <RxCross2
-              size={25}
-              className="text-[#ff4d2d] md:hidden"
-              onClick={() => setShowSearch(false)}
-            />
-          ) : (
-            <IoSearchSharp
-              size={25}
-              className="text-[#ff4d2d] md:hidden"
-              onClick={() => setShowSearch(true)}
-            />
-          )
+        {/* Mobile Search Toggle */}
+        {userData.role === "User" && (
+          <button className="md:hidden p-2 rounded-full hover:bg-gray-100 transition" onClick={() => setShowSearch(!showSearch)}>
+            {showSearch ? <RxCross2 size={24} className="text-[#ff4d2d]" /> : <IoSearchSharp size={24} className="text-[#ff4d2d]" />}
+          </button>
         )}
 
+        {/* Owner Actions */}
+        {userData.role === "Owner" && myShopData && (
+          <button
+            onClick={() => navigate("/add-item")}
+            className="hidden md:flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-[#ff4d2d]/80 to-[#ff9966]/80 text-white rounded-full shadow hover:scale-105 transition-transform"
+          >
+            <FaPlus /> Add Food
+          </button>
+        )}
 
-        {/* OWNER Role Navbar */}
-        {userData.role == "Owner" ? (
-          <>
-            {/* Add Food Items only if shop exists */}
-            {myShopData && (
-              <>
-                {/* Add Food Items Button (Desktop) */}
-                <button onClick={() => navigate("/add-item")} className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
-                  <FaPlus size={18} />
-                  <span>Add Food Items</span>
-                </button>
-
-                {/* Add Food Items Mobile */}
-                <button onClick={() => navigate("/add-item")}  className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
-                  <FaPlus size={18} />
-                </button>
-              </>
-            )}
-
-            {/* My Orders (Desktop) */}
-            <div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
-              <IoNotifications size={18} />
-              <span>My Orders</span>
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
-            </div>
-
-            {/* My Orders (Mobile) */}
-            <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
-              <IoNotifications size={18} />
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
-            </div>
-          </>
+        {/* Notifications / Orders */}
+        {userData.role === "Owner" ? (
+          <div className="relative hidden md:flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
+            <IoNotifications size={20} />
+            <span>My Orders</span>
+            <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
+          </div>
         ) : (
-          // USER Role Navbar
           <>
-            {/* Cart Icon */}
             <div className="relative cursor-pointer">
-              <span className="absolute right-[-6px] top-[-12px] text-[#ff4d2d]">0</span>
+              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1 py-[1px]">0</span>
               <IoCartOutline size={25} className="text-[#ff4d2d]" />
             </div>
-
-            {/* My Orders Button (Desktop) */}
-            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
-              My Orders
-            </button>
           </>
         )}
-
 
         {/* Profile Avatar */}
         <div
           onClick={() => setShowInfo(prev => !prev)}
-          className="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-[#ff4d2d] text-white text-[18px] shadow-xl font-semibold cursor-pointer"
+          className="w-10 h-10 rounded-full bg-[#ff4d2d] flex items-center justify-center text-white font-semibold text-lg shadow-lg cursor-pointer"
         >
-          {userData?.fullName.slice(0, 1)}
+          {userData?.fullName?.[0]}
         </div>
 
         {/* Profile Dropdown */}
         {showInfo && (
-          <div className="fixed top-[80px] right-[10px] md:right-[20%] lg-right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]">
-            <div className="text-[17px] font-semibold">{userData.fullName}</div>
-            {userData.role == "User" && <div className="md:hidden text-[#ff4d2d] font-semibold">My Orders</div>}            
-            <div onClick={handleLogout} className="text-[#ff4d2d] font-semibold cursor-pointer">
-              Logout
-            </div>
+          <div className="fixed top-[90px] right-4 md:right-[20%] lg:right-[25%] w-[200px] bg-white rounded-xl shadow-2xl p-4 flex flex-col gap-2 z-50">
+            <div className="font-semibold text-gray-900">{userData.fullName}</div>
+            {userData.role === "User" && <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer">My Orders</div>}
+            <div onClick={handleLogout} className="text-[#ff4d2d] font-semibold cursor-pointer hover:underline">Logout</div>
           </div>
         )}
       </div>
-    </div>
+
+      {/* Mobile Search Bar */}
+      {showSearch && userData.role === "User" && (
+        <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[90%] h-[70px] bg-white shadow-lg rounded-full flex items-center px-4 gap-2 md:hidden">
+          <FaLocationDot className="text-[#ff4d2d]" />
+          <span className="truncate text-gray-600">{currentCity}</span>
+          <IoSearchSharp className="text-[#ff4d2d]" />
+          <input type="text" placeholder="Search delicious food..." className="flex-1 outline-none text-gray-700 px-2" />
+        </div>
+      )}
+    </nav>
   );
 };
 
