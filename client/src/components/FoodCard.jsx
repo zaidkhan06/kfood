@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { FaLeaf, FaDrumstickBite, FaMinus, FaPlus, FaCartArrowDown } from 'react-icons/fa'
 import { IoMdStar, IoMdStarOutline } from 'react-icons/io'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart } from '../redux/userSlice'
 
 const FoodCard = ({ data }) => {
   const [quantity, setQuantity] = useState(0)
+  const dispatch = useDispatch()
+  const { cartItems } = useSelector(state => state.user)
 
   const renderStars = (rating) => {
     const stars = []
@@ -24,7 +28,7 @@ const FoodCard = ({ data }) => {
 
   return (
     <div className="w-[47%] sm:w-[40%] md:w-[30%] lg:w-[260px] bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden cursor-pointer ">
-      
+
       {/* Image Section */}
       <div className="relative w-full h-36 sm:h-40 md:h-44 lg:h-48 overflow-hidden rounded-t-3xl">
         <img
@@ -66,9 +70,9 @@ const FoodCard = ({ data }) => {
           >
             <FaMinus size={12} />
           </button>
-          <span className="px-1 sm:px-4 text-gray-800 font-medium text-sm sm:text-base">
+          <div className="px-1 w-full sm:px-4 text-gray-800 font-medium text-sm sm:text-base">
             {quantity}
-          </span>
+          </div>
           <button
             onClick={handleIncrease}
             className="px-1 sm:px-3 py-1 hover:bg-gray-200 transition-all duration-200"
@@ -78,7 +82,16 @@ const FoodCard = ({ data }) => {
         </div>
 
         {/* Add to Cart */}
-        <button className="bg-gradient-to-r from-[#ff4d2d] to-[#ff9966] text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+        <button onClick={() => {
+          quantity>0?dispatch(addToCart({
+          id: data._id,
+          name: data.name,
+          price: data.price,
+          image: data.image,
+          shop: data.shop,
+          quantity,
+          foodType: data.foodType
+        })):null}} className={`${cartItems.some(i => i.id == data._id) ? "bg-gray-800" : "bg-gradient-to-r from-[#ff4d2d] to-[#ff9966]"} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm`}>
           <FaCartArrowDown /> <span>Add</span>
         </button>
       </div>

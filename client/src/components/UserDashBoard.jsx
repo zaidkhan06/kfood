@@ -57,7 +57,7 @@ const UserDashBoard = () => {
       <div className="w-full max-w-9xl flex flex-col gap-6 items-start px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <h1 className="text-gray-900 text-2xl sm:text-3xl font-bold relative">
-          Inspiration for your first order
+          What’s on Your Mind Today?
           <span className="block w-20 h-[3px] bg-gradient-to-r from-[#ff4d2d] to-[#ff9966] mt-1 rounded-full"></span>
         </h1>
 
@@ -105,7 +105,7 @@ const UserDashBoard = () => {
       <div className="w-full max-w-9xl flex flex-col gap-6 items-center p-4 md:p-6">
         {/* Heading */}
         <h1 className="text-gray-900 text-2xl sm:text-3xl font-bold tracking-wide">
-          Best Shops in <span className="text-[#ff4d2d]">{currentCity}</span>
+        Taste the Best of <span className="text-[#ff4d2d]">{currentCity}</span>
           <span className="block w-20 h-[3px] bg-gradient-to-r from-[#ff4d2d] to-[#ff9966] mt-1 rounded-full"></span>
         </h1>
 
@@ -153,7 +153,7 @@ const UserDashBoard = () => {
       <div className="w-full max-w-9xl flex flex-col gap-6 items-center px-4 sm:px-6 lg:px-8 py-4">
         {/* Section Heading */}
         <h1 className="text-gray-900 text-2xl sm:text-3xl font-bold relative">
-          Suggested Food Items
+          You Might Love These Dishes
           <span className="block w-20 h-[3px] bg-gradient-to-r from-[#ff4d2d] to-[#ff9966] mt-1 rounded-full"></span>
         </h1>
 

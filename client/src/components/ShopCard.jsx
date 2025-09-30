@@ -16,14 +16,9 @@ const ShopCard = ({ name, image, location }) => {
 
       {/* Shop Info */}
       <div className="mt-3 text-center">
-        <h2 className="text-sm md:text-base font-semibold text-gray-800 truncate max-w-[120px]">
+        <h2 className="text-sm md:text-base font-semibold text-gray-800  max-w-[120px]">
           {name}
         </h2>
-        {location && (
-          <p className="text-xs text-gray-500 truncate max-w-[120px] mx-auto">
-            {location}
-          </p>
-        )}
       </div>
     </div>
   );

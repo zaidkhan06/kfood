@@ -23,7 +23,7 @@ const useGetMyShop = () => {
         fetchShop()
        
 
-    }, [userData])
+    }, [])
 }
 
 export default useGetMyShop

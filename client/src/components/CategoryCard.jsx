@@ -18,6 +18,7 @@ const CategoryCard = ({ name, image }) => {
       hover:-translate-y-1 
       hover:scale-105 
       cursor-pointer
+      mt-5
     ">
       {/* Image */}
       <img

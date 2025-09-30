@@ -10,7 +10,8 @@ import { setUserData } from "../redux/userSlice";
 import { FaPlus } from "react-icons/fa";
 
 const Navbar = () => {
-  const { userData, currentCity } = useSelector(state => state.user);
+
+  const { userData, currentCity, cartItems } = useSelector(state => state.user);
   const { myShopData } = useSelector(state => state.owner);
   const [showInfo, setShowInfo] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -105,8 +106,8 @@ const Navbar = () => {
           </div>
         ) : (
           <>
-            <div className="relative cursor-pointer">
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1 py-[1px]">0</span>
+            <div onClick={()=>navigate("/cart")} className="relative cursor-pointer">
+              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1 py-[1px]">{cartItems.length}</span>
               <IoCartOutline size={25} className="text-[#ff4d2d]" />
             </div>
           </>
@@ -136,7 +137,13 @@ const Navbar = () => {
           <FaLocationDot className="text-[#ff4d2d]" />
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d]" />
-          <input type="text" placeholder="Search delicious food..." className="flex-1 outline-none text-gray-700 px-2" />
+          <input type="text" 
+          placeholder={currentPlaceholder}
+            style={{
+              opacity: fade ? 1 : 0,
+              transition: "opacity 0.5s ease-in-out",
+            }}
+          className="flex-1 outline-none text-gray-700 px-2" />
         </div>
       )}
     </nav>
