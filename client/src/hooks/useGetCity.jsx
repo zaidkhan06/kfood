@@ -22,12 +22,9 @@ const useGetCity = () => {
        
 
         // fallback chain
-        const city =
-          location?.city ||
-          location?.district ||
-          location?.state_district ||
-          location?.county ||
-          "Unknown";
+        const city = location?.city;
+       
+
 
        
 

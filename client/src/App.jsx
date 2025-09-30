@@ -5,7 +5,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import Navbar from "./components/Navbar"
 import Home from "./components/Home"
 import useGetCurrentUser from "./hooks/useGetCurrentUser"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import useGetCity from './hooks/useGetCity'
 import useGetMyShop from "./hooks/useGetMyShop"
 import CreateEditShop from "./pages/CreateEditShop"
@@ -15,6 +15,7 @@ import useGetShopByCity from "./hooks/useGetShopByCity"
 import useGetItemsByCity from "./hooks/useGetItemsByCity"
 import CartPage from "./pages/CartPage"
 import CheckOut from "./pages/CheckOut"
+import { useEffect } from "react"
 
 
 export const serverUrl =
@@ -23,29 +24,42 @@ export const serverUrl =
     : "https://kfood.onrender.com";
 
 function App() {
- 
+
   useGetCurrentUser()
   useGetCity()
   useGetMyShop()
   useGetShopByCity()
   useGetItemsByCity()
-  const {userData} = useSelector(state=>state.user)
-  
+  const { userData } = useSelector(state => state.user)
+    const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Restore user state from token
+      dispatch(setUserData({ token }));
+
+      // Optional: fetch full user info from backend
+      // axios.get(`${serverUrl}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      //      .then(res => dispatch(setUserData(res.data.user)));
+    }
+  }, []);
+
 
   return (
     <>
-    
-    <Routes>
-      <Route path="/" element={userData?<><Home /></>:<Navigate to={"/signin"} />} />
-       <Route path="/signup" element={!userData?<SignUp />:<Navigate to={"/"} />} />
-       <Route path="/signin" element={!userData?<SignIn />:<Navigate to={"/"} />} />
-       <Route path="/forgot-password" element={<ForgotPassword />} />
-       <Route path="/create-edit-shop" element={userData?<CreateEditShop />: <Navigate to={"/signin"} />} />
-       <Route path="/add-item" element={userData?<AddItem />: <Navigate to={"/signin"} />} />
-       <Route path="/edit-item/:itemId" element={userData?<EditItem />: <Navigate to={"/signin"} />} />
-       <Route path="/cart" element={userData?<CartPage />: <Navigate to={"/signin"} />} />
-       <Route path="/checkout" element={userData?<CheckOut />: <Navigate to={"/signin"} />} />
-    </Routes>
+
+      <Routes>
+        <Route path="/" element={userData ? <><Home /></> : <Navigate to={"/signin"} />} />
+        <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to={"/"} />} />
+        <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to={"/"} />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/create-edit-shop" element={userData ? <CreateEditShop /> : <Navigate to={"/signin"} />} />
+        <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to={"/signin"} />} />
+        <Route path="/edit-item/:itemId" element={userData ? <EditItem /> : <Navigate to={"/signin"} />} />
+        <Route path="/cart" element={userData ? <CartPage /> : <Navigate to={"/signin"} />} />
+        <Route path="/checkout" element={userData ? <CheckOut /> : <Navigate to={"/signin"} />} />
+      </Routes>
     </>
   )
 }

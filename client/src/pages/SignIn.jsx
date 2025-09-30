@@ -30,6 +30,7 @@ const SignIn = () => {
 
 
       }, { withCredentials: true })
+      localStorage.setItem("token", data.token);
       dispatch(setUserData(data))
 
     } catch (error) {
@@ -59,6 +60,7 @@ const SignIn = () => {
         { email, password },
         { withCredentials: true }
       );
+       localStorage.setItem("token", data.token);
 
 
      

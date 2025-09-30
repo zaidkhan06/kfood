@@ -78,7 +78,7 @@ const UserDashBoard = () => {
             ref={cateScrollRef}
             className="w-full flex overflow-x-auto gap-6 pb-4"
           >
-            {categories.map((cate, index) => (
+            {categories?.map((cate, index) => (
               <CategoryCard
                 name={cate.category}
                 image={cate.image}
