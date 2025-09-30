@@ -1,5 +1,5 @@
-import express from "express"
 import dotenv from "dotenv"
+import express from "express"
 dotenv.config()
 import connectDb from "./config/db.js";
 import cookieParser from "cookie-parser";
@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
     credentials: true,
-    methods:["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"]
+    methods:["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
   })
 );
 
