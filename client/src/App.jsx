@@ -15,7 +15,6 @@ import useGetShopByCity from "./hooks/useGetShopByCity"
 import useGetItemsByCity from "./hooks/useGetItemsByCity"
 import CartPage from "./pages/CartPage"
 import CheckOut from "./pages/CheckOut"
-import { useEffect } from "react"
 
 
 export const serverUrl =
@@ -31,19 +30,8 @@ function App() {
   useGetShopByCity()
   useGetItemsByCity()
   const { userData } = useSelector(state => state.user)
-    const dispatch = useDispatch();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // Restore user state from token
-      dispatch(setUserData({ token }));
 
-      // Optional: fetch full user info from backend
-      // axios.get(`${serverUrl}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
-      //      .then(res => dispatch(setUserData(res.data.user)));
-    }
-  }, []);
 
 
   return (
