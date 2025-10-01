@@ -30,8 +30,8 @@ const CartPage = () => {
                         <h1 className='text-lg font-semibold'>Total amount</h1><span className='text-xl font-bold text-[#ff4d2d]'>₹ {totalAmount}</span>
 
                     </div>
-                    <div className='mt-4 flex justify-end'>
-                        <button className='bg-[#ff4d2d] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#e64526] transition cursor-pointer'>Place Order</button>
+                    <div  className='mt-4 flex justify-end'>
+                        <button onClick={()=>navigate("/checkout")} className='bg-[#ff4d2d] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#e64526] transition cursor-pointer'>Place Order</button>
                     </div>
                     </>
                 )}
