@@ -54,6 +54,8 @@ const CheckOut = () => {
   const tax = totalAmount * 0.1;
   const grandTotal = totalAmount + deliveryFee + tax;
 
+
+  
   // ✅ reverse geocode
   const getAddressByLatLng = async (lat, lng) => {
     try {
@@ -156,7 +158,7 @@ const CheckOut = () => {
                 scrollWheelZoom={false}
                 doubleClickZoom={false}
                 touchZoom={false}
-                dragging={true} // ✅ marker draggable but no accidental scroll
+                dragging={true} // marker draggable but no accidental scroll
               >
                 <RecenterMap location={location} />
                 <TileLayer
@@ -207,7 +209,7 @@ const CheckOut = () => {
           <h2 className="text-lg font-semibold mb-3 text-gray-800">Order Summary</h2>
           <div className="rounded-2xl border bg-gray-50 p-5 space-y-2 shadow-sm">
             {cartItems.map((item) => (
-              <div key={item._id} className="flex justify-between text-gray-700">
+              <div key={item.id} className="flex justify-between text-gray-700">
                 <p>{item.name} × {item.quantity}</p>
                 <p className="font-medium text-gray-900">₹{item.price * item.quantity}</p>
               </div>
