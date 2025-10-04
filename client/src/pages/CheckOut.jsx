@@ -13,6 +13,7 @@ import { MdDeliveryDining } from "react-icons/md";
 import { CiMobile3 } from "react-icons/ci";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { serverUrl } from '../App';
+import { addMyOrders } from '../redux/userSlice';
 
 // ✅ Map recenter
 function RecenterMap({ location }) {
@@ -104,6 +105,7 @@ const CheckOut = () => {
         totalAmount: grandTotal,
         cartItems
       }, { withCredentials: true })
+      dispatch(addMyOrders(result.data))
      navigate("/order-placed")
     } catch (error) {
       console.log(error)
