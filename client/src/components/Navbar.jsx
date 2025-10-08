@@ -100,27 +100,30 @@ const Navbar = () => {
         {/* Notifications / Orders */}
         {userData.role === "Owner" ? (
           <>
-          <div onClick={()=>navigate("/my-orders")} className="relative hidden md:flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
-            <IoNotifications size={20} />
-            <span>My Orders</span>
-            <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
-          </div>
-          <div className=" relative md:hidden flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={()=>navigate("/my-orders")}
-          >
-            <IoNotifications size={20} />
-            <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
+            <div onClick={() => navigate("/my-orders")} className="relative hidden md:flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
+              <IoNotifications size={20} />
+              <span>My Orders</span>
+              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
+            </div>
+            <div className=" relative md:hidden flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={() => navigate("/my-orders")}
+            >
+              <IoNotifications size={20} />
+              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
 
 
-          </div>
+            </div>
           </>
         ) : (
           <>
-            <div onClick={()=>navigate("/cart")} className="relative cursor-pointer">
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1 py-[1px]">{cartItems.length}</span>
-              <IoCartOutline size={25} className="text-[#ff4d2d]" />
-            </div>
+            {userData.role == "User" &&
+              <div onClick={() => navigate("/cart")} className="relative cursor-pointer">
+                <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1 py-[1px]">{cartItems.length}</span>
+                <IoCartOutline size={25} className="text-[#ff4d2d]" />
+              </div>
+            }
 
-            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium " onClick={()=>navigate("/my-orders")}>My Orders</button>
+
+            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium " onClick={() => navigate("/my-orders")}>My Orders</button>
           </>
         )}
 
@@ -134,12 +137,39 @@ const Navbar = () => {
 
         {/* Profile Dropdown */}
         {showInfo && (
-          <div className="fixed top-[90px] right-4 md:right-[20%] lg:right-[25%] w-[200px] bg-white rounded-xl shadow-2xl p-4 flex flex-col gap-2 z-50">
+          <div
+            className={`fixed top-[90px] right-4 lg:right-[10%] ${userData.role === "Rider" ? "lg:right-[30%]" : "md:right-[25%]"
+              } w-[200px] bg-white rounded-xl shadow-2xl p-4 flex flex-col gap-2 z-50`}
+          >
             <div className="font-semibold text-gray-900">{userData.fullName}</div>
-            {userData.role === "User" && <div onClick={()=> navigate("/my-orders")} className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer">My Orders</div>}
-            <div onClick={handleLogout} className="text-[#ff4d2d] font-semibold cursor-pointer hover:underline">Logout</div>
+
+            {userData.role === "User" && (
+              <div
+                onClick={() => navigate("/my-orders")}
+                className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer"
+              >
+                My Orders
+              </div>
+            )}
+
+            {userData.role === "Rider" && (
+              <div
+                onClick={() => navigate("/rider-dashboard")}
+                className="text-[#ff4d2d] font-semibold cursor-pointer hover:underline"
+              >
+                Rider Dashboard
+              </div>
+            )}
+
+            <div
+              onClick={handleLogout}
+              className="text-[#ff4d2d] font-semibold cursor-pointer hover:underline"
+            >
+              Logout
+            </div>
           </div>
         )}
+
       </div>
 
       {/* Mobile Search Bar */}
@@ -148,13 +178,13 @@ const Navbar = () => {
           <FaLocationDot className="text-[#ff4d2d]" />
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d]" />
-          <input type="text" 
-          placeholder={currentPlaceholder}
+          <input type="text"
+            placeholder={currentPlaceholder}
             style={{
               opacity: fade ? 1 : 0,
               transition: "opacity 0.5s ease-in-out",
             }}
-          className="flex-1 outline-none text-gray-700 px-2" />
+            className="flex-1 outline-none text-gray-700 px-2" />
         </div>
       )}
     </nav>

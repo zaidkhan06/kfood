@@ -15,24 +15,29 @@ const useGetCity = () => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        dispatch(setLocation({ lat: latitude, lon: longitude }))
+        dispatch(setLocation({ lat: latitude, lon: longitude }));
 
         const result = await axios.get(
           `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apikey}`
         );
+       
 
         const location = result?.data?.results?.[0];
-        const city = location?.city;
 
+        // City fallback logic
+        const city =
+          location?.city ||
+          location?.county ||
+          location?.district ||
+          location?.state_district ||
+          "Unknown";
 
-
-
+        const address = location?.address_line2 || location?.address_line1 || "Unknown Address";
 
         dispatch(setCurrentCity(city));
-        dispatch(setCurrentState(result?.data?.results[0].state))
-        dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1))
-        dispatch(setAddress(result?.data?.results[0].address_line2))
-
+        dispatch(setCurrentState(location?.state || "Unknown State"));
+        dispatch(setCurrentAddress(address));
+        dispatch(setAddress(address));
 
       } catch (error) {
         console.error("Error fetching city:", error);

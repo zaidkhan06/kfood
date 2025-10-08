@@ -1,3 +1,4 @@
+import DeliveryAssignment from "../models/deliveryAssignment.model.js"
 import Order from "../models/order.model.js"
 import Shop from "../models/shop.model.js"
 import User from "../models/user.model.js"
@@ -71,7 +72,7 @@ export const getMyOrders = async (req, res) => {
                 .populate("shopOrders.shop", "name")
                 .populate("shopOrders.owner", "name email mobile")
                 .populate("shopOrders.shopOrderItems.item", "name image price")
-                
+
             return res.status(200).json(orders)
 
 
@@ -81,17 +82,18 @@ export const getMyOrders = async (req, res) => {
                 .populate("shopOrders.shop", "name")
                 .populate("user")
                 .populate("shopOrders.shopOrderItems.item", "name image price")
-            
+                .populate("shopOrders.assignedDeliveryBoy", "fullName mobile")
 
-             const filteredOrders = orders.map((order => ({
-                    _id: order._id,
-                    paymentMethod: order.paymentMethod,
-                    user: order.user,
-                    shopOrders: order.shopOrders.find(o=>o.owner._id==req.userId),
-                    createdAt: order.createdAt,
-                    deliveryAddress: order.deliveryAddress
-                })))
-                return res.status(200).json(filteredOrders)
+
+            const filteredOrders = orders.map((order => ({
+                _id: order._id,
+                paymentMethod: order.paymentMethod,
+                user: order.user,
+                shopOrders: order.shopOrders.find(o => o.owner._id == req.userId),
+                createdAt: order.createdAt,
+                deliveryAddress: order.deliveryAddress
+            })))
+            return res.status(200).json(filteredOrders)
 
         }
 
@@ -102,21 +104,209 @@ export const getMyOrders = async (req, res) => {
 }
 
 
-export const updateOrderStatus = async(req, res) => {
+export const updateOrderStatus = async (req, res) => {
     try {
-        const {orderId, shopId}=req.params
-        const {status} = req.body
+        const { orderId, shopId } = req.params
+        const { status } = req.body
         const order = await Order.findById(orderId)
-        const shopOrder = order.shopOrders.find(o=>o.shop==shopId)
-        if(!shopOrder){
-            return res.status(400).json({message: "Shop order not found"})
+        const shopOrder = order.shopOrders.find(o => o.shop == shopId)
+
+        if (!shopOrder) {
+            return res.status(400).json({ message: "Shop order not found" })
         }
-        shopOrder.status=status
-        await shopOrder.save()
+
+        shopOrder.status = status
+        let deliveryBoysPayload = []
+        if (status == "out of delivery" && !shopOrder.assignement) {
+            const { longitude, latitude } = order.deliveryAddress
+            const nearByDeliveryBoys = await User.find({
+                role: "Rider",
+                location: {
+                    $near: {
+                        $geometry: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
+                        $maxDistance: 5000
+                    }
+                }
+            })
+
+            const nearByIds = nearByDeliveryBoys.map(b => b._id)
+            const busyIds = await DeliveryAssignment.find({
+                assignTo: { $in: nearByIds },
+                status: { $nin: ["brodcasted", "completed"] }
+            }).distinct("assignTo")
+            const busyIdSet = new Set(busyIds.map(id => String(id)))
+            const availableBoys = nearByDeliveryBoys.filter(b => !busyIdSet.has(String(b._id)))
+            const candidates = availableBoys.map(b => b._id)
+            if (candidates.length == 0) {
+                await order.save()
+                return res.status({ message: "Order status updated but there is no available delivery boys" })
+            }
+
+            const deliveryAssignment = await DeliveryAssignment.create({
+                order: order._id,
+                shop: shopOrder.shop,
+                shopOrderId: shopOrder._id,
+                brodcastedTo: candidates,
+                status: "brodcasted"
+
+            })
+            shopOrder.assignedDeliveryBoy = deliveryAssignment.assignTo
+            shopOrder.assignement = deliveryAssignment._id
+            deliveryBoysPayload = availableBoys.map(b => ({
+                id: b._id,
+                fullName: b.fullName,
+                longitude: b.location.coordinates?.[0],
+                latitude: b.location.coordinates?.[1],
+                mobile: b.mobile
+            }))
+
+
+        }
         await order.save()
-        return res.status(200).json(status)
+        const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId)
+        await order.populate("shopOrders.shop", "name")
+        await order.populate("shopOrders.assignedDeliveryBoy", "fullName email mobile")
+
+        return res.status(200).json({
+            shopOrder: updatedShopOrder,
+            assignedDeliveryBoy: updatedShopOrder?.assignedDeliveryBoy,
+            availableBoys: deliveryBoysPayload,
+            assignement: updatedShopOrder?.assignement._id
+
+        })
     } catch (error) {
-         return res.status(500).json({ message: `Order Status Error ${error}` })
-        
+        return res.status(500).json({ message: `Order Status Error ${error}` })
+
+    }
+}
+
+
+export const getDeliveryBoyAssignment = async (req, res) => {
+    try {
+        const deliveryBoyId = req.userId
+        const assignment = await DeliveryAssignment.find({
+            brodcastedTo: deliveryBoyId,
+            status: "brodcasted"
+        })
+            .populate("order")
+            .populate("shop")
+
+        const formated = assignment.map(a => ({
+            assignmentId: a._id,
+            orderId: a.order._id,
+            shopName: a.shop.name,
+            deliveryAddress: a.order.deliveryAddress,
+            items: a.order.shopOrders.find(so => so._id.equals(a.shopOrderId)).
+                shopOrderItems || [],
+            subTotal: a.order.shopOrders.find(so => so._id.equals(a.shopOrderId)).
+                subTotal,
+        }))
+
+        return res.status(200).json(formated)
+
+    } catch (error) {
+        return res.status(500).json({ message: `Get Assignment Error ${error}` })
+
+
+    }
+
+}
+
+
+
+export const acceptOrder = async (req, res) => {
+    try {
+        const { assignmentId } = req.params
+        const assignment = await DeliveryAssignment.findById(assignmentId)
+        if (!assignment) {
+            return res.status(400).json({ message: "Assignment not found" })
+        }
+        if (assignment.status !== "brodcasted") {
+            return res.status(400).json({ message: "Assignment is expired" })
+
+        }
+        const alreadyAssigned = await DeliveryAssignment.findOne({
+            assignTo: req.userId,
+            status: { $nin: ["brodcasted", "completed"] }
+        })
+
+        if (alreadyAssigned) {
+            return res.status(400).json({ message: "You are already assigned on another order." })
+        }
+        assignment.assignTo = req.userId
+        assignment.status = "assigned"
+        assignment.acceptedAt = new Date()
+        await assignment.save()
+
+        const order = await Order.findById(assignment.order)
+        if (!order) {
+            return res.status(400).json({ message: "Order not found" })
+        }
+        let shopOrder = order.shopOrders.id(assignment.shopOrderId)
+        shopOrder.assignedDeliveryBoy = req.userId
+        await order.save()
+        return res.status(200).json({
+            message: "Order accepted"
+
+        })
+
+
+
+    } catch (error) {
+        return res.status(500).json({ message: `Order Accept Error ${error}` })
+
+    }
+}
+
+
+export const getCurrentOrder = async (req, res) => {
+    try {
+        const assignment = await DeliveryAssignment.findOne({
+            assignTo: req.userId,
+            status: "assigned"
+        })
+            .populate("shop", "name")
+            .populate("assignTo", "fullName email mobile location")
+            .populate({
+                path: "order",
+                populate: [{ path: "user", select: "fullName email location mobile" }]
+
+            })
+        if (!assignment) {
+            return res.status(400).json({ message: "Assignment not found" })
+        }
+        if (!assignment.order) {
+            return res.status(400).json({ message: "Order not found" })
+        }
+        const shopOrder = assignment.order.shopOrders.find(so => String(so._id == assignment.shopOrderId))
+        if (!shopOrder) {
+            return res.status(400).json({ message: "Shop order not found" })
+        }
+        let deliveryBoyLocation = { lat: null, lon: null }
+        if (assignment.assignTo.location.coordinates.length == 2) {
+            deliveryBoyLocation.lat = assignment.assignTo.location.coordinates[1]
+            deliveryBoyLocation.lon = assignment.assignTo.location.coordinates[0]
+        }
+
+        let customerLocation = { lat: null, lon: null }
+        if (assignment.order.deliveryAddress) {
+            customerLocation.lat = assignment.order.deliveryAddress.latitude
+            customerLocation.lon = assignment.order.deliveryAddress.longitude
+        }
+
+        return res.status(200).json({
+            _id:assignment.order._id,
+            user:assignment.order.user,
+            shopOrder,
+            deliveryAddress:assignment.order.deliveryAddress,
+            deliveryBoyLocation,
+            customerLocation
+        })
+
+
+
+    } catch (error) {
+        return res.status(500).json({ message: `Current Order Error ${error}` })
+
     }
 }

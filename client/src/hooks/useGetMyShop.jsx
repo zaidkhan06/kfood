@@ -8,7 +8,6 @@ import { setmyShopData } from '../redux/ownerSlice'
 
 const useGetMyShop = () => {
     const dispatch = useDispatch();
-    const {userData} = useSelector(state=>state.user)
     useEffect(()=> {
         const fetchShop = async () => {
            try {

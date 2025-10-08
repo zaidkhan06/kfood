@@ -6,12 +6,12 @@ import { setItemsInMyCity } from '../redux/userSlice'
 
 const useGetItemsByCity = () => {
   const dispatch = useDispatch();
-  const { currentCity } = useSelector(state => state.user);
+  const { currentCity,  userData} = useSelector(state => state.user);
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        if (!currentCity) return; // prevent API call if city not ready
+        if (!currentCity || !userData) return; // prevent API call if city not ready
 
         const result = await axios.get(
           `${serverUrl}/api/item/get-by-city/${encodeURIComponent(currentCity)}`, 
@@ -26,6 +26,7 @@ const useGetItemsByCity = () => {
 
     fetchItems();
   }, [currentCity, dispatch]);
+  
 };
 
 export default useGetItemsByCity;

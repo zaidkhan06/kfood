@@ -11,6 +11,8 @@ const shopOrderItemSchema = new mongoose.Schema({
     quantity:Number
 
 }, {timestamps:true})
+
+
 const shopOrderSchema= new mongoose.Schema({
     shop:{
         type:mongoose.Schema.Types.ObjectId,
@@ -26,9 +28,22 @@ const shopOrderSchema= new mongoose.Schema({
         type:String,
         enum:["pending", "preparing", "out of delivery", "delivered"],
         default:"pending"
+    },
+    assignement:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DeliveryAssignment",
+        deafult:null
+    },
+    assignedDeliveryBoy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        
     }
 
+
 }, {timestamps: true});
+
+
 
 const orderSchema = new mongoose.Schema({
     user:{
