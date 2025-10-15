@@ -1,8 +1,8 @@
 import React from 'react'
 
-const CategoryCard = ({ name, image }) => {
+const CategoryCard = ({ name, image, onClick }) => {
   return (
-    <div className="
+    <div onClick={onClick} className="
       relative 
       flex-shrink-0 
       w-[45%] sm:w-[30%] md:w-[22%] lg:w-[180px] 

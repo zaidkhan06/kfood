@@ -17,6 +17,23 @@ const UserDashboard = () => {
   const [showRightCateButton, setShowRightCateButton] = useState(false);
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(false);
+  const [updatedItemsList, setUpdatedItemsList]=useState([]);
+
+
+
+  const handleFilterByCategory=(category)=>{
+    if(category=="All"){
+      setUpdatedItemsList(itemsInMyCity);
+    }else{
+      const filteredList = itemsInMyCity.filter(i=>i.category===category);
+      setUpdatedItemsList(filteredList)
+    }
+
+  }
+  useEffect(()=>{
+    setUpdatedItemsList(itemsInMyCity)
+
+  }, [itemsInMyCity])
 
   const [loading, setLoading] = useState(true);
 
@@ -138,6 +155,7 @@ const UserDashboard = () => {
             ) : (
               categories?.map((cate, index) => (
                 <CategoryCard
+                onClick={()=>handleFilterByCategory(cate.category)}
                   name={cate.category}
                   image={cate.image}
                   key={index}
@@ -213,7 +231,7 @@ const UserDashboard = () => {
           {loading ? (
             <FoodSkeleton />
           ) : (
-            itemsInMyCity?.map((item, index) => (
+            updatedItemsList?.map((item, index) => (
               <FoodCard key={index} data={item} />
             ))
           )}

@@ -83,15 +83,16 @@ const FoodCard = ({ data }) => {
 
         {/* Add to Cart */}
         <button onClick={() => {
-          quantity>0?dispatch(addToCart({
-          id: data._id,
-          name: data.name,
-          price: data.price,
-          image: data.image,
-          shop: data.shop,
-          quantity,
-          foodType: data.foodType
-        })):null}} className={`${cartItems.some(i => i.id == data._id) ? "bg-gray-800" : "bg-gradient-to-r from-[#ff4d2d] to-[#ff9966]"} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm`}>
+          quantity > 0 ? dispatch(addToCart({
+            id: data._id,   
+            name: data.name,
+            price: data.price,
+            image: data.image,
+            shop: data.shop,
+            quantity,
+            foodType: data.foodType
+          })) : null
+        }} className={`${cartItems.some(i => i.id == data._id) ? "bg-gray-800" : "bg-gradient-to-r from-[#ff4d2d] to-[#ff9966]"} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm`}>
           <FaCartArrowDown /> <span>Add</span>
         </button>
       </div>

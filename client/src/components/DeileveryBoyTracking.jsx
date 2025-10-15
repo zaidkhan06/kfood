@@ -3,7 +3,7 @@ import scooter from '../assets/scooter.png'
 import home from '../assets/home.png'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 
 
 
@@ -30,8 +30,8 @@ const DeileveryBoyTracking = ({ data }) => {
     const customerLon = data?.deliveryBoyLocation?.lon
 
     if (!deliveryBoyLat || !deliveryBoyLon || !customerLat || !customerLon) {
-    return <p className="text-center mt-3 text-gray-600">Location data not available</p>;
-  }
+        return <p className="text-center mt-3 text-gray-600">Location data not available</p>;
+    }
 
     const path = [
         [deliveryBoyLat, deliveryBoyLon],
@@ -47,16 +47,27 @@ const DeileveryBoyTracking = ({ data }) => {
                 center={center}
                 zoom={16}
             >
-                
+
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <Marker
-                position={[deliveryBoyLat, deliveryBoyLon]}
-                icon={deliveryBoyIcon}
-                />
-                
+                    position={[deliveryBoyLat, deliveryBoyLon]}
+                    icon={deliveryBoyIcon}
+                >
+                    <Popup>Rider</Popup>
+
+                </Marker>
+                <Marker
+                    position={[customerLat, customerLon]}
+                    icon={customerIcon}
+                >
+                    <Popup>Customer</Popup>
+                </Marker>
+
+                <Polyline positions={path} color='orange'></Polyline>
+
 
             </MapContainer>
 
