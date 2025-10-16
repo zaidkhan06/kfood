@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { setUserData } from "../redux/userSlice";
+import { setSearchItems, setUserData } from "../redux/userSlice";
 import { FaPlus } from "react-icons/fa";
 
 const Navbar = () => {
@@ -14,6 +14,7 @@ const Navbar = () => {
   const { userData, currentCity, cartItems } = useSelector(state => state.user);
   const { myShopData } = useSelector(state => state.owner);
   const [showInfo, setShowInfo] = useState(false);
+  const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +25,29 @@ const Navbar = () => {
     "Fresh burgers near you...",
     "Desserts to delight you...",
   ];
+
+  
+
+  const handleSearchItems = async (query) => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, {withCredentials: true});
+      console.log(res.data);
+      dispatch(setSearchItems(res.data))
+    } catch (error) {
+      console.log(error)
+      
+    }
+
+  }
+  useEffect(() => {
+    if(query){
+
+      handleSearchItems(query);
+    } else {
+      dispatch(setSearchItems(null))
+    }
+  }, [query])
+  
 
   const handleLogout = async () => {
     try {
@@ -66,6 +90,8 @@ const Navbar = () => {
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d] text-lg" />
           <input
+          onChange={(e)=>setQuery(e.target.value)}
+          value={query}
             type="text"
             placeholder={currentPlaceholder}
             style={{
@@ -179,6 +205,8 @@ const Navbar = () => {
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d]" />
           <input type="text"
+          onChange={(e)=>setQuery(e.target.value)}
+          value={query}
             placeholder={currentPlaceholder}
             style={{
               opacity: fade ? 1 : 0,

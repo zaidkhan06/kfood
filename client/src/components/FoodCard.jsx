@@ -27,7 +27,7 @@ const FoodCard = ({ data }) => {
   const handleDecrease = () => quantity > 0 && setQuantity(quantity - 1)
 
   return (
-    <div className="w-[47%] sm:w-[40%] md:w-[30%] lg:w-[260px] bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden cursor-pointer ">
+    <div className="w-[47%] sm:w-[40%] md:w-[30%] lg:w-[260px] bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden cursor-pointer ">
 
       {/* Image Section */}
       <div className="relative w-full h-36 sm:h-40 md:h-44 lg:h-48 overflow-hidden rounded-t-3xl">

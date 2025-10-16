@@ -6,11 +6,15 @@ import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import FoodCard from "./FoodCard";
 import ShopCard from "./ShopCard";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { serverUrl } from "../App";
 
 const UserDashboard = () => {
-  const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(
+  const { currentCity, shopInMyCity, itemsInMyCity, searchItems } = useSelector(
     (state) => state.user
   );
+  const navigate = useNavigate();
   const cateScrollRef = useRef();
   const shopScrollRef = useRef();
   const [showLeftCateButton, setShowLeftCateButton] = useState(false);
@@ -18,6 +22,9 @@ const UserDashboard = () => {
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(false);
   const [updatedItemsList, setUpdatedItemsList]=useState([]);
+
+
+
 
 
 
@@ -126,11 +133,26 @@ const UserDashboard = () => {
         ))}
     </div>
   );
+
+  const handleShop = (shop) => {
+     navigate(`/shop/${shop._id}`)
+  }
   // -------------------------------------------------
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto">
       <Navbar />
+      {searchItems && searchItems.length>0 && (
+        <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-12 sm:mt-4">
+          <h1 className="text-gray-900 text-2xl sm:text-3xl font-semibold border-b border-gray-200 pb-2">Search results</h1>
+          <div className="w-full h-auto flex flex-wrap gap-6 justify-center">
+            {searchItems.map((item)=>(
+              <FoodCard data={item} key={item._id} />
+            ))}
+          </div>
+
+        </div>
+      )}
 
       {/* Categories Section */}
       <div className="w-full max-w-9xl flex flex-col gap-6 items-start px-4 sm:px-6 lg:px-8">
@@ -155,7 +177,7 @@ const UserDashboard = () => {
             ) : (
               categories?.map((cate, index) => (
                 <CategoryCard
-                onClick={()=>handleFilterByCategory(cate.category)}
+                 onClick={()=>handleFilterByCategory(cate.category)}
                   name={cate.category}
                   image={cate.image}
                   key={index}
@@ -200,9 +222,9 @@ const UserDashboard = () => {
             ) : (
               shopInMyCity?.map((shop, index) => (
                 <ShopCard
+                   onClick={() => handleShop(shop)}
                   name={shop.name}
                   image={shop.image}
-                  location={shop.city}
                   key={index}
                 />
               ))
