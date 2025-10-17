@@ -62,13 +62,7 @@ const Shop = () => {
       {shop && (
         <div className="relative w-full h-64 md:h-80 lg:h-96">
           {/* --- BACK BUTTON ADDED HERE --- */}
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute z-20 top-[65%] left-[42%] sm:left-[47%]  bg-white/80 backdrop-blur-sm text-gray-800 px-6 py-1 rounded-full shadow-lg hover:bg-white transition-all duration-200"
-            aria-label="Go back"
-          >
-            <IoArrowBack size={24} />
-          </button>
+          
           
           <img
             className="w-full h-full object-cover brightness-75"
@@ -80,7 +74,15 @@ const Shop = () => {
               {shop.name}
             </h1>
             <p className="text-gray-200 mt-2 text-sm md:text-base max-w-md">{shop.address}</p>
+             <button
+            onClick={() => navigate(-1)}
+            className=" bg-white/80 backdrop-blur-sm text-gray-800 px-6 py-1 rounded-full shadow-lg hover:bg-white transition-all duration-200"
+            aria-label="Go back"
+          >
+            <IoArrowBack size={24} />
+          </button>
           </div>
+         
         </div>
       )}
 

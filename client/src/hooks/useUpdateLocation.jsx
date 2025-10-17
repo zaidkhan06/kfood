@@ -1,23 +1,57 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { serverUrl } from '../App'
-import { useDispatch, useSelector } from "react-redux";
-import { setCurrentAddress, setCurrentCity, setCurrentState } from "../redux/userSlice";
-import { setAddress, setLocation } from "../redux/mapSlice";
+import { serverUrl } from '../App';
+import { useSelector } from "react-redux"; 
 
 const useUpdateLocation = () => {
-  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const updateLocation=async(lat, lon)=>{
-        const result = await axios.post(`${serverUrl}/api/user/update-location`, {lat, lon}, {withCredentials:true})
-        console.log(result.data)
+    
+    let watchId;
+
+    const updateLocation = async (lat, lon) => {
+      try {
+        
+        if (userData) {
+          await axios.post(
+            `${serverUrl}/api/user/update-location`,
+            { lat, lon },
+            { withCredentials: true }
+          );
+        }
+      } catch (error) {
+        
+        console.error("Failed to update location:", error);
+      }
+    };
+
+    
+    if (userData) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          updateLocation(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+       
+          console.error("Geolocation error:", err);
+        },
+        {
+         
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
     }
-    navigator.geolocation.watchPosition((pos)=>{
-        updateLocation(pos.coords.latitude, pos.coords.longitude)
-    })
-  }, [userData]);
+
+   
+    return () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, [userData, serverUrl]); 
 };
 
 export default useUpdateLocation;
