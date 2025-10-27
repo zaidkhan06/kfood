@@ -56,7 +56,7 @@ const CheckOut = () => {
   const grandTotal = totalAmount + deliveryFee + tax;
 
 
-  
+
   // ✅ reverse geocode
   const getAddressByLatLng = async (lat, lng) => {
     try {
@@ -71,12 +71,12 @@ const CheckOut = () => {
 
   // ✅ current location
   const getCurrentLocation = () => {
-    const latitude=userData.location.coordinates[1]
-    const longitude=userData.location.coordinates[0]
-    
-      dispatch(setLocation({ lat: latitude, lon: longitude }))
-      getAddressByLatLng(latitude, longitude)
-    }
+    const latitude = userData.location.coordinates[1]
+    const longitude = userData.location.coordinates[0]
+
+    dispatch(setLocation({ lat: latitude, lon: longitude }))
+    getAddressByLatLng(latitude, longitude)
+  }
 
   // ✅ geocode by address
   const getlatlngByAddress = async () => {
@@ -98,15 +98,63 @@ const CheckOut = () => {
           text: addressInput,
           latitude: location.lat,
           longitude: location.lon
-        }, 
+        },
         totalAmount: grandTotal,
         cartItems
       }, { withCredentials: true })
-      dispatch(addMyOrders(result.data))
-     navigate("/order-placed")
+
+      if (paymentMethod == "cod") {
+        dispatch(addMyOrders(result.data))
+        navigate("/order-placed")
+      } else {
+        const orderId = result.data.orderId
+        const razorOrder = result.data.razorOrder
+        openRazorpayWindow(orderId, razorOrder);
+      }
+
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const openRazorpayWindow = (orderId, razorOrder) => {
+    const options = {
+      key: import.meta.env.VITE_RAZAORPAY_KEY_ID,
+      amount: razorOrder.amount,
+      currency: "INR",
+      name: "Kfood",
+      description: "Pay and enjoy your meal.",
+      order_id: razorOrder.id,
+      theme: {
+        color: "#ff4d2d"
+      },
+      handler: async function (response) {
+        try {
+          const result = await axios.post(`${serverUrl}/api/order/verify-payment`, {
+            razorpay_payment_id: response.razorpay_payment_id,
+            orderId
+          }, { withCredentials: true })
+          dispatch(addMyOrders(result.data))
+          navigate("/order-placed")
+        } catch (error) {
+          console.log(error)
+
+        }
+      },
+      prefill: {
+        name: userData?.name || "",
+        email: userData?.email || "",
+        contact: userData?.phone || ""
+      },
+      notes: {
+        address: addressInput || "Not provided"
+      }
+
+
+    }
+    const rzp = new window.Razorpay(options)
+    rzp.open()
+
   }
 
   useEffect(() => {

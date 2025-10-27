@@ -21,6 +21,9 @@ import useGetMyOrders from "./hooks/useGetMyOrders"
 import useUpdateLocation from "./hooks/useUpdateLocation"
 import TrackOrderPage from "./pages/TrackOrderPage"
 import Shop from "./pages/Shop"
+import { io, Socket } from "socket.io-client"
+import { setSocket } from "./redux/userSlice"
+import { useEffect } from "react"
 
 
 export const serverUrl =
@@ -29,6 +32,7 @@ export const serverUrl =
     : "https://kfood.onrender.com";
 
 function App() {
+  const dispatch = useDispatch();
 
   useGetCurrentUser()
   useGetCity()
@@ -38,6 +42,21 @@ function App() {
   useGetMyOrders()
   useUpdateLocation()
   const { userData } = useSelector(state => state.user)
+
+
+  useEffect(() => {
+    const socketInstance = io(serverUrl, {withCredentials:true})
+    dispatch(setSocket(socketInstance))
+    socketInstance.on('connect', ()=>{
+      if(userData){
+        socketInstance.emit('identity', {userId:userData._id})
+      }
+    })
+    return ()=>{
+      socketInstance.disconnect()
+    }
+  }, [userData?._id])
+  
 
 
 

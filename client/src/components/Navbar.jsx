@@ -26,28 +26,28 @@ const Navbar = () => {
     "Desserts to delight you...",
   ];
 
-  
+
 
   const handleSearchItems = async (query) => {
     try {
-      const res = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, {withCredentials: true});
+      const res = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, { withCredentials: true });
       console.log(res.data);
       dispatch(setSearchItems(res.data))
     } catch (error) {
       console.log(error)
-      
+
     }
 
   }
   useEffect(() => {
-    if(query){
+    if (query) {
 
       handleSearchItems(query);
     } else {
       dispatch(setSearchItems(null))
     }
   }, [query])
-  
+
 
   const handleLogout = async () => {
     try {
@@ -62,16 +62,18 @@ const Navbar = () => {
   const [fade, setFade] = useState(true);
 
   useEffect(() => {
+    if (query) return; 
+
     const interval = setInterval(() => {
-      setFade(false); // fade out
+      setFade(false);
       setTimeout(() => {
         setPlaceholderIndex((prev) => (prev + 1) % searchPlaceholders.length);
-        setFade(true); // fade in
-      }, 500); // same as transition duration
+        setFade(true);
+      }, 500);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [query]);
 
   const currentPlaceholder = searchPlaceholders[placeholderIndex];
 
@@ -90,8 +92,8 @@ const Navbar = () => {
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d] text-lg" />
           <input
-          onChange={(e)=>setQuery(e.target.value)}
-          value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            value={query}
             type="text"
             placeholder={currentPlaceholder}
             style={{
@@ -129,12 +131,12 @@ const Navbar = () => {
             <div onClick={() => navigate("/my-orders")} className="relative hidden md:flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
               <IoNotifications size={20} />
               <span>My Orders</span>
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
+              {/* <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span> */}
             </div>
             <div className=" relative md:hidden flex items-center gap-2 cursor-pointer px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={() => navigate("/my-orders")}
             >
               <IoNotifications size={20} />
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span>
+              {/* <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">0</span> */}
 
 
             </div>
@@ -205,8 +207,8 @@ const Navbar = () => {
           <span className="truncate text-gray-600">{currentCity}</span>
           <IoSearchSharp className="text-[#ff4d2d]" />
           <input type="text"
-          onChange={(e)=>setQuery(e.target.value)}
-          value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            value={query}
             placeholder={currentPlaceholder}
             style={{
               opacity: fade ? 1 : 0,

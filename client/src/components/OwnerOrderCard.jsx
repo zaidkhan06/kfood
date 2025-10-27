@@ -14,7 +14,7 @@ const dispatch = useDispatch()
     try {
       const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, {status}, {withCredentials:true})
       dispatch(updateOrderStatus({orderId, shopId, status}))
-      setAvailableBoys(result.data.availableBoys)
+     setAvailableBoys(result.data.availableBoys || []);
       console.log(result.data)
 
     } catch (error) {
@@ -29,6 +29,7 @@ const dispatch = useDispatch()
         <h2 className='text-lg font-semibold text-gray-800'>{data.user.fullName}</h2>
         <p className='text-sm text-gray-500'>{data.user.email}</p>
         <p className='flex items-center gap-2 text-sm text-gray-600 mt-1'><FaPhoneAlt /><span>+91 {data.user.mobile}</span></p>
+        {data.paymentMethod=="online"? <p className='flex items-center gap-2 text-sm text-gray-600 mt-1'>Payment status: {data.payment? "Paid" : "Failed"}</p>: <p className='flex items-center gap-2 text-sm text-gray-600 mt-1'>Payment Method: {data.paymentMethod}</p>}
       </div>
 
       <div className='flex items-start flex-col gap-2 text-gray-600 text-sm'>

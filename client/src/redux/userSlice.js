@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit"; 
+import { createSlice } from "@reduxjs/toolkit";
 
 const userSlice = createSlice({
    name: "user",
    initialState: {
       userData: null,
-      city: null,
+      currentCity: null,
       currentState: null,
       currentAddress: null,
       shopInMyCity: null,
@@ -12,7 +12,8 @@ const userSlice = createSlice({
       cartItems: [],
       totalAmount: 0,
       myOrders: [],
-      searchItems:null
+      searchItems: null,
+      socket: null
    },
    reducers: {
       setUserData: (state, action) => {
@@ -65,24 +66,39 @@ const userSlice = createSlice({
          state.myOrders = action.payload
       },
       addMyOrders: (state, action) => {
-         state.myOrders=[action.payload,...state.myOrders]
+         state.myOrders = [action.payload, ...state.myOrders]
       },
-      updateOrderStatus:(state, action)=> {
-         const {orderId, shopId, status} = action.payload
-         const order=state.myOrders.find(o=>o._id==orderId)
-         if(order){
-            if(order.shopOrders && order.shopOrders.shop._id==shopId){
-               order.shopOrders.status=status
+      updateOrderStatus: (state, action) => {
+         const { orderId, shopId, status } = action.payload
+         const order = state.myOrders.find(o => o._id == orderId)
+         if (order) {
+            if (order.shopOrders && order.shopOrders.shop._id == shopId) {
+               order.shopOrders.status = status
             }
          }
       },
-      setSearchItems:(state, action)=>{
-         state.searchItems=action.payload
+      updateRealtimeOrderStatus: (state, action) => {
+         const { orderId, shopId, status } = action.payload
+         const order = state.myOrders.find(o => o._id == orderId)
+         if (order) {
+            const shopOrder = order.shopOrders.find(so=>so.shop._id==shopId)
+            if(shopOrder){
+               shopOrder.status=status
+            }
+         }
+
+
+      },
+      setSearchItems: (state, action) => {
+         state.searchItems = action.payload
+      },
+      setSocket: (state, action) => {
+         state.socket = action.payload
       }
 
 
    }
 })
 
-export const { setUserData, setCurrentCity, setCurrentAddress, setCurrentState, setShopInMyCity, setItemsInMyCity, addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrders, updateOrderStatus, setSearchItems } = userSlice.actions
+export const { setUserData, setCurrentCity, setCurrentAddress, setCurrentState, setShopInMyCity, setItemsInMyCity, addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrders, updateOrderStatus, setSearchItems, setSocket, updateRealtimeOrderStatus } = userSlice.actions
 export default userSlice.reducer

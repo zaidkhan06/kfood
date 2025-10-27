@@ -155,8 +155,8 @@ const UserDashboard = () => {
       )}
 
       {/* Categories Section */}
-      <div className="w-full max-w-9xl flex flex-col gap-6 items-start px-4 sm:px-6 lg:px-8">
-        <h1 className="text-gray-900 text-2xl sm:text-3xl font-bold relative">
+      <div className="w-full max-w-9xl flex flex-col gap-6 items-center px-4 sm:px-6 lg:px-8 ">
+        <h1 className="text-gray-900 text-2xl sm:text-3xl font-bold">
           What’s on Your Mind Today?
           <span className="block w-20 h-[3px] bg-gradient-to-r from-[#ff4d2d] to-[#ff9966] mt-1 rounded-full"></span>
         </h1>
